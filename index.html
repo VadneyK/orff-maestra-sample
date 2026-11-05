@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
 <title>Summary Table Prototype</title>
 <meta name="description" content="A working prototype of the coding step in a school SLP assessment workflow, built on the public Multisource Assessment Summary Table.">
 <style>
@@ -40,7 +41,7 @@
   th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); border-bottom: 1px solid var(--line); padding: 6px; }
   td { vertical-align: top; padding: 8px 6px; border-bottom: 1px solid var(--line); }
   input, textarea { font: inherit; width: 100%; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; }
-  textarea { resize: vertical; }
+  textarea { resize: vertical; field-sizing: content; min-height: 2.6em; }
   .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 6px; }
   .seg button { border: 0; border-radius: 0; padding: 5px 9px; font-size: 13px; }
   .seg button + button { border-left: 1px solid var(--line); }
@@ -62,6 +63,15 @@
   #checks li.miss { color: var(--warn); }
   footer { color: var(--muted); font-size: 13px; }
   a { color: var(--accent); }
+  /* Narrow screens: each row becomes a card so Disorder? stays in view without sideways scrolling. */
+  @media (max-width: 720px) {
+    table { min-width: 0; }
+    thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    table, tbody, tr, td { display: block; width: 100%; }
+    tr { border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; margin-bottom: 10px; }
+    td { border: 0; padding: 6px 0; }
+    td::before { content: attr(data-label); display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin-bottom: 4px; }
+  }
   @media print {
     .tabs, .bar, .del, .no-print { display: none !important; }
     [data-step] { display: block !important; }

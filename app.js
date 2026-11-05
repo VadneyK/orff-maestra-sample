@@ -28,24 +28,30 @@ function renderSources() {
   ).join("");
 }
 
+// The status cell: the row's open issues (T1 to T5), the T2 merge flag, or "Counted".
+function statusHtml(r, dups) {
+  const issues = rowIssues(r);
+  const dup = r.source.trim() !== "" && dups.includes(sourceKey(r.source));
+  return (issues.length || dup
+    ? `<ul>${issues.map((x) => `<li><span class="rule">${x.rule}</span> ${esc(x.text)}</li>`).join("")}${dup ? `<li><span class="rule">T2</span> Counts as one source with another row. Merge them.</li>` : ""}</ul>`
+    : r.answer === "Inconclusive"
+      ? `<span class="ok">Listed, not counted</span>`
+      : `<span class="ok">Counted</span>`) + `<button type="button" class="del" aria-label="Remove row">Remove</button>`;
+}
+
 function renderTable() {
   const dups = duplicateSources(state.rows);
   $("#rows").innerHTML = state.rows.map((r, i) => {
-    const issues = rowIssues(r);
-    const dup = r.source.trim() !== "" && dups.includes(sourceKey(r.source));
     return `<tr data-i="${i}">
-      <td><textarea class="src" aria-label="Data source" rows="2" placeholder="Data source">${esc(r.source)}</textarea></td>
-      <td><textarea class="finding" aria-label="Finding" rows="3" placeholder="What the source showed">${esc(r.finding)}</textarea></td>
-      <td>
+      <td data-label="Data source"><textarea class="src" aria-label="Data source" rows="2" placeholder="Data source">${esc(r.source)}</textarea></td>
+      <td data-label="Finding"><textarea class="finding" aria-label="Finding" rows="3" placeholder="What the source showed">${esc(r.finding)}</textarea></td>
+      <td data-label="Disorder?">
         <div class="seg" role="radiogroup" aria-label="Disorder?">
           ${ANSWERS.map((a) => `<button type="button" class="ans${r.answer === a ? " on" : ""}" data-a="${a}" role="radio" aria-checked="${r.answer === a}">${a}</button>`).join("")}
         </div>
         ${r.answer === "Inconclusive" ? `<textarea class="reason" aria-label="Reason inconclusive" rows="2" placeholder="One-line reason">${esc(r.reason)}</textarea>` : ""}
       </td>
-      <td class="status">${issues.length || dup
-        ? `<ul>${issues.map((x) => `<li><span class="rule">${x.rule}</span> ${esc(x.text)}</li>`).join("")}${dup ? `<li><span class="rule">T2</span> Counts as one source with another row. Merge them.</li>` : ""}</ul>`
-        : `<span class="ok">Counted</span>`}
-        <button type="button" class="del" aria-label="Remove row">Remove</button></td>
+      <td class="status" data-label="Status">${statusHtml(r, dups)}</td>
     </tr>`;
   }).join("");
   renderSummary();
@@ -97,11 +103,12 @@ $("#rows").addEventListener("input", (e) => {
   if (e.target.classList.contains("src")) r.source = e.target.value;
   if (e.target.classList.contains("finding")) r.finding = e.target.value;
   if (e.target.classList.contains("reason")) r.reason = e.target.value;
-  // Only the status cell and summary change while typing, so focus stays in the field.
-  const issues = rowIssues(r);
-  tr.querySelector(".status").innerHTML = (issues.length
-    ? `<ul>${issues.map((x) => `<li><span class="rule">${x.rule}</span> ${esc(x.text)}</li>`).join("")}</ul>`
-    : `<span class="ok">Counted</span>`) + `<button type="button" class="del" aria-label="Remove row">Remove</button>`;
+  // Only the status cells and summary change while typing, so focus stays in the field.
+  // Every row's status is refreshed because a source name edit can add or clear a T2 flag elsewhere.
+  const dups = duplicateSources(state.rows);
+  document.querySelectorAll("#rows tr").forEach((row) => {
+    row.querySelector(".status").innerHTML = statusHtml(state.rows[+row.dataset.i], dups);
+  });
   renderSummary();
 });
 $("#rows").addEventListener("focusout", (e) => {
