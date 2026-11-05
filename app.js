@@ -78,9 +78,16 @@ function renderChecks() {
     : "<li>Write the brief note to see the checks.</li>";
 }
 
-function setStep(n) {
+// focus: move keyboard focus to the new step's heading, for buttons that hide themselves
+// (Next, the case buttons). The tabs keep focus on the tab.
+function setStep(n, focus = false) {
   state.step = n;
   document.querySelectorAll("[data-step]").forEach((el) => { el.hidden = +el.dataset.step !== n; });
+  if (focus) {
+    const h = document.querySelector(`[data-step="${n}"] h2`);
+    h.tabIndex = -1;
+    h.focus();
+  }
   document.querySelectorAll(".tab").forEach((t) => t.setAttribute("aria-selected", +t.dataset.go === n));
 }
 
@@ -128,7 +135,7 @@ $("#add").addEventListener("click", () => { state.rows.push(emptyRow()); renderT
 $("#note").addEventListener("input", (e) => { state.note = e.target.value; renderChecks(); });
 
 document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", () => setStep(+t.dataset.go)));
-document.querySelectorAll("[data-next]").forEach((b) => b.addEventListener("click", () => setStep(+b.dataset.next)));
+document.querySelectorAll("[data-next]").forEach((b) => b.addEventListener("click", () => setStep(+b.dataset.next, true)));
 // Constructed cases: one button each, so the page can be shown leaning either way or split.
 $("#cases").innerHTML = CASES.map((c) => `<button type="button" data-case="${c.id}" title="${esc(c.summary)}">${esc(c.label)}</button>`).join("");
 $("#cases").addEventListener("click", (e) => {
@@ -137,7 +144,7 @@ $("#cases").addEventListener("click", (e) => {
   state.note = c.note;
   $("#case-name").textContent = `${c.label}. ${c.summary} Fictional, for demonstration.`;
   renderAll();
-  setStep(2);
+  setStep(2, true);
 });
 
 $("#questions").innerHTML = OPEN_QUESTIONS.map((q) => `<li><b>${q.id}.</b> ${esc(q.text)} <span class="blocks">Blocks: ${esc(q.blocks)}.</span></li>`).join("");

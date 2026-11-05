@@ -20,7 +20,7 @@ export const SUGGESTED_SOURCES = [
   STANDARDIZED,
 ];
 
-// One line per rule, in plain words. The page shows it when a rule chip is hovered or focused,
+// One line per rule, in plain words. The page shows it when a rule chip is hovered, and screen readers read it,
 // and test/trace.test.mjs checks that every id here is a row in REQUIREMENTS.md.
 export const RULES = {
   T1: "Each row names one data source.",
@@ -31,7 +31,7 @@ export const RULES = {
   T6: "Convergence counts only interpretable sources (Yes or No).",
   T7: "A cited test score stands next to at least one other named source.",
   T8: "Gather naturalistic data first; standardized testing last, closed with a testing-the-limits probe.",
-  T9: "A difference finding answers only the educational question; general-education supports stay open.",
+  T9: "If the team finds difference, that answers only the educational question; general-education supports stay open.",
 };
 
 // The questions only the spec author can answer. Each one blocks a named piece of the build.
@@ -127,15 +127,27 @@ export function gatherNotes(rows) {
   const missing = NATURALISTIC.filter((n) => !keys.has(n.toLowerCase()));
   if (missing.length)
     notes.push({ rule: "T8", text: `Naturalistic data comes first. Not in the table yet: ${missing.join(", ").toLowerCase()}.` });
-  if (!std.some((r) => /limits|probe/i.test(r.finding)))
+  if (!std.some((r) => probeDone(r.finding)))
     notes.push({ rule: "T8", text: "Close standardized testing with a brief testing-the-limits probe, and say what it showed in the finding." });
   return notes;
+}
+
+// A finding says a testing-the-limits probe was given. "No probe was possible" or "probe not given"
+// does not count: a negation before or right after the word in the same clause means it was not done.
+export function probeDone(finding) {
+  for (const clause of finding.toLowerCase().split(/[.;]/)) {
+    if (!/\b(probe|limits)\b/.test(clause)) continue;
+    if (/\b(no|not|without|never|unable|could ?n[o']t)\b[^.;]*\b(probe|limits)\b/.test(clause)) continue;
+    if (/\b(probe|limits)\b\s+(was|were)?\s*(not|never)\b/.test(clause)) continue;
+    return true;
+  }
+  return false;
 }
 
 // T9: from the table's note on the third column. Shown only when the count leans to difference.
 export function contextNote(c) {
   if (c.interpretable === 0 || c.difference <= c.disorder) return null;
-  return "A difference finding answers only the educational question. It does not rule out general-education supports, such as MTSS or dialect-informed instruction.";
+  return "If the team finds difference, that answers only the educational question. It does not rule out general-education supports, such as MTSS or dialect-informed instruction.";
 }
 
 // PLACEHOLDER for the TTL-MSM combining rule. The public table does not publish one, so this

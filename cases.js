@@ -1,13 +1,14 @@
 // Constructed cases for demos and pilot sessions. Fictional, written to exercise the rules,
 // not clinical guidance. Each one leads to a different convergence line, so a reviewer can see
-// the page does not lean one way. test/trace.test.mjs checks that each case is complete and
-// gives the line in `expect`.
+// the page does not lean one way. test/trace.test.mjs checks that each case is complete, gives the
+// line in `expect`, raises `expectGather` T8 notes, and that its prewritten note passes step 3.
 
 export const CASES = [
   {
     id: "A",
     label: "Case A: difference",
     expect: "difference",
+    expectGather: 0,
     summary: "Bilingual student whose test norms do not fit; naturalistic sources show typical communication.",
     rows: [
       { source: "Classroom observation", finding: "Follows multi-step directions and takes turns in group work; asks peers to repeat new vocabulary.", answer: "No", reason: "" },
@@ -22,6 +23,7 @@ export const CASES = [
     id: "B",
     label: "Case B: disorder",
     expect: "disorder",
+    expectGather: 0,
     summary: "Sources agree across settings that communication is limited, beyond what dialect or language history explains.",
     rows: [
       { source: "Classroom observation", finding: "Loses track of multi-step directions even with visual supports; peers often finish the student's sentences.", answer: "Yes", reason: "" },
@@ -36,12 +38,13 @@ export const CASES = [
     id: "C",
     label: "Case C: split (Q2)",
     expect: "split",
-    summary: "Home and school sources disagree, so the tie wording the table leaves open (Q2) shows on screen.",
+    expectGather: 1, // no probe was possible, so T8 asks for one
+    summary: "Sources split two and two across settings, so the tie wording the table leaves open (Q2) shows on screen.",
     rows: [
       { source: "Classroom observation", finding: "Follows routines and works well in pairs; quiet in whole-class discussion.", answer: "No", reason: "" },
-      { source: "Teacher interview", finding: "Teacher is concerned the student cannot explain reasoning in math or science.", answer: "Yes", reason: "" },
+      { source: "Teacher interview", finding: "Teacher describes repeated breakdowns when the student explains reasoning in math and science, even with sentence starters.", answer: "Yes", reason: "" },
       { source: "Language sample", finding: "Conversational sample is organized; dialect features match the home community.", answer: "No", reason: "" },
-      { source: "Parent interview", finding: "Family reports the student struggles to tell stories in either language.", answer: "Yes", reason: "" },
+      { source: "Parent interview", finding: "Family describes the student unable to retell a familiar event in either language; relatives finish the student's stories.", answer: "Yes", reason: "" },
       { source: "Standardized assessment", finding: "Testing stopped early when the student became unwell; no testing-the-limits probe was possible.", answer: "Inconclusive", reason: "Testing was not completed." },
     ],
     note: "2 of 4 interpretable sources support disorder and 2 support difference; the standardized assessment is inconclusive and not counted because testing was not completed.",

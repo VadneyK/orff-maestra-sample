@@ -1,11 +1,11 @@
-// Traceability: the rule ids and open questions in core.js, the sample cases in app.js,
+// Traceability: the rule ids and open questions in core.js, the constructed cases in cases.js,
 // and REQUIREMENTS.md must agree, so the document a clinician reads is the one the code follows.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { RULES, OPEN_QUESTIONS } from "../core.js";
 import { CASES } from "../cases.js";
-import { convergence, rowIssues } from "../core.js";
+import { convergence, rowIssues, noteChecks, gatherNotes } from "../core.js";
 
 const req = readFileSync(new URL("../REQUIREMENTS.md", import.meta.url), "utf8");
 const core = readFileSync(new URL("../core.js", import.meta.url), "utf8");
@@ -35,5 +35,7 @@ test("each constructed case is complete and gives the line it promises", () => {
     const k = convergence(c.rows);
     assert.equal(k.incomplete, 0, c.id);
     assert.equal(k.disorder > k.difference ? "disorder" : k.difference > k.disorder ? "difference" : "split", c.expect, c.id);
+    assert.equal(gatherNotes(c.rows).length, c.expectGather, `${c.id}: T8 notes`);
+    for (const chk of noteChecks(c.rows, c.note)) assert.ok(chk.ok, `${c.id} note fails ${chk.rule}: ${chk.text}`);
   }
 });

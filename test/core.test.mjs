@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  emptyRow, rowIssues, duplicateSources, convergence, convergenceLine, combineRule, noteChecks, gatherNotes, contextNote,
+  emptyRow, rowIssues, duplicateSources, convergence, convergenceLine, combineRule, noteChecks, gatherNotes, contextNote, probeDone,
 } from "../core.js";
 
 const row = (source, answer, reason = "", finding = "Brief finding.") => ({ source, finding, answer, reason });
@@ -113,4 +113,13 @@ test("T9: the general-education note shows only when the count leans to differen
   assert.equal(contextNote(convergence([row("A", "Yes"), row("B", "No")])), null);
   assert.equal(contextNote(convergence([row("A", "Yes")])), null);
   assert.equal(contextNote(convergence([])), null);
+});
+
+test("T8: a negated probe does not count as a probe", () => {
+  assert.equal(probeDone("Testing stopped early; no testing-the-limits probe was possible."), false);
+  assert.equal(probeDone("Probe not given."), false);
+  assert.equal(probeDone("Below the norm without a testing-the-limits probe."), false);
+  assert.equal(probeDone("Below the norm; a testing-the-limits probe raised accuracy."), true);
+  assert.equal(probeDone("Errors persisted in a testing-the-limits probe."), true);
+  assert.equal(probeDone("Below the norm."), false);
 });

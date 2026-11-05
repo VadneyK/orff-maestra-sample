@@ -28,7 +28,7 @@ The six open questions are on the page itself, at the bottom, so no second tab i
 
 1. Read the line aloud: "4 of 4 interpretable sources support difference; 1 source inconclusive and not counted."
 2. On **Classroom observation**, click **Yes**. The line changes to "3 of 4 interpretable sources support difference". Click **No** to put it back.
-3. Point at the T9 note under the reasons: a difference finding answers only the educational question and leaves general-education supports such as MTSS open. It comes from the table's note on the third column.
+3. Point at the T9 note under the reasons: if the team finds difference, that answers only the educational question and leaves general-education supports such as MTSS open. It comes from the table's note on the third column.
 4. Point at the yellow note: the combining rule is not wired in, so the page reports counts and makes no determination. Say: the table informs the team's decision and does not make it; the rule has one marked place in `core.js` and a test waiting for it.
 5. Optional, if there is time: click **Next: check the note**. Both checks on the sample note pass (count stated, inconclusive source named). No model call; the checks are plain rules.
 
@@ -45,7 +45,7 @@ Scroll to **Open questions for the spec author** at the bottom of the page and w
 
 Say: each one blocks a specific line of code, and I would rather ask than guess. If asked how the list stays honest: `test/trace.test.mjs` fails when the code and REQUIREMENTS.md disagree.
 
-If there is time: go back to step 1 and click **Case B: disorder** (5 of 5 support disorder) and **Case C: split (Q2)** (2 and 2, the tie the table leaves open). It shows the page does not lean one way.
+If there is time: go back to step 1 and click **Case B: disorder** (5 of 5 support disorder) and **Case C: split (Q2)** (2 and 2, the tie the table leaves open; its T8 note asks for the testing-the-limits probe that could not be given). It shows the page does not lean one way.
 
 ## If something goes wrong
 
