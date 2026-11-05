@@ -9,12 +9,16 @@ Source: Multisource Assessment Summary Table, Callwood 2026, callwoodslp.com/tab
 | Id | Requirement | From the table | Test |
 | --- | --- | --- | --- |
 | T1 | Each row names one data source. | "Data Source: each type of evidence you gathered." | `rowIssues` |
-| T2 | Multiple standardized tests count as one source. Two rows that name standardized tests are flagged to merge. | "Multiple standardized tests count as one source." | `T2: two standardized tests are one source` |
+| T2 | Multiple standardized tests count as one source. Two rows that name standardized tests are flagged to merge, and both are held out of the count until they are merged, so one source is never counted twice. | "Multiple standardized tests count as one source." | `T2: two standardized tests are one source`, `T2: two complete standardized rows are not counted until merged` |
 | T3 | Each row has a brief finding. The prototype flags findings over 40 words. | "Keep each entry brief enough that everyone at the meeting can read the full table at a glance." | `T3: an empty or very long finding is flagged` |
 | T4 | Disorder? is Yes, No, or Inconclusive, decided per row. | "answer Yes, No, or Inconclusive ... Decide each source on its own before comparing across rows." | `T4` |
-| T5 | An inconclusive row needs a one-line reason and is left out of the count. | "Give each inconclusive source a one-line reason and leave it out of the count." | `T5`, `T6` |
+| T5 | An inconclusive row needs a one-line reason and is left out of the count. Its status reads "Listed, not counted". | "Give each inconclusive source a one-line reason and leave it out of the count." | `T5`, `T6` |
 | T6 | Convergence counts only Yes and No rows and fills the line "___ of ___ interpretable sources support ___; ___ inconclusive and not counted." | The convergence line and "Count only interpretable sources (Yes or No)". | `T6`, `a tie leaves the blank open` |
-| T7 | If the note cites a test score, it also names at least one other source. | Paraphrased from the companion Reasoning Map: one source should not become the conclusion because it produced a number. | `T7` |
+| T7 | If the note cites a test score, it also names at least one other source. Two standardized tests named together still count as one source here (T2). | Paraphrased from the companion Reasoning Map: one source should not become the conclusion because it produced a number. | `T7: a cited score with no other named source is flagged`, `T7: two standardized tests named in the note still count as one source` |
+
+## Page checks
+
+Checked on 2026-11-05 at 375 px and 1280 px, light and dark, with axe-core: 0 violations on step 1, step 2 with the sample case, step 2 with a T2 merge flag showing, and step 3. Under 720 px each row becomes a card, so Disorder? is in view without sideways scrolling.
 
 ## Not built, on purpose
 
