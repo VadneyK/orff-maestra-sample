@@ -57,8 +57,12 @@ export function duplicateSources(rows) {
 // T5, T6: count only interpretable sources (Yes or No); inconclusive ones are listed, not counted.
 // Returns the numbers for the convergence line. It does not return a determination:
 // the table "informs the team's decision; it does not make it."
+// T2: rows that share a source are held out of the count until they are merged, so one
+// source cannot be counted twice. The page shows them as "Merge them", not "Counted".
 export function convergence(rows) {
-  const complete = rows.filter((r) => rowIssues(r).length === 0);
+  const dups = new Set(duplicateSources(rows));
+  const unmerged = (r) => r.source.trim() !== "" && dups.has(sourceKey(r.source));
+  const complete = rows.filter((r) => rowIssues(r).length === 0 && !unmerged(r));
   const yes = complete.filter((r) => r.answer === "Yes").length;
   const no = complete.filter((r) => r.answer === "No").length;
   const inconclusive = complete.filter((r) => r.answer === "Inconclusive");
@@ -113,7 +117,8 @@ export function noteChecks(rows, note) {
   }
   const scoreWords = /(standard score|percentile|scaled score|\bss\b|below average|\bsd\b)/;
   if (scoreWords.test(text) && c.interpretable > 0) {
-    const mentions = rows.filter((r) => r.source.trim() && text.includes(r.source.trim().toLowerCase())).length;
+    // Distinct sources by T2 key, so two standardized tests do not pass as two sources.
+    const mentions = new Set(rows.filter((r) => r.source.trim() && text.includes(r.source.trim().toLowerCase())).map((r) => sourceKey(r.source))).size;
     checks.push({
       rule: "T7",
       ok: mentions >= 2,

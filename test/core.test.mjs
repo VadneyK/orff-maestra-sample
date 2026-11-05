@@ -66,3 +66,21 @@ test("T7: a cited score with no other named source is flagged", () => {
   const k = noteChecks(rows, "1 of 2: standard score of 78 on the standardized assessment.").find((x) => x.rule === "T7");
   assert.equal(k.ok, false);
 });
+
+test("T2: two complete standardized rows are not counted until merged", () => {
+  const rows = [
+    row("Standardized assessment", "Yes"),
+    row("Standardized test: vocabulary", "Yes"),
+    row("Teacher interview", "No"),
+  ];
+  const c = convergence(rows);
+  assert.equal(c.interpretable, 1);
+  assert.equal(c.disorder, 0);
+  assert.equal(c.incomplete, 2);
+});
+
+test("T7: two standardized tests named in the note still count as one source", () => {
+  const rows = [row("Standardized assessment", "Yes"), row("Standardized test: vocabulary", "Yes"), row("Teacher interview", "No")];
+  const k = noteChecks(rows, "Standard score of 78 on the standardized assessment and the standardized test: vocabulary.").find((x) => x.rule === "T7");
+  assert.equal(k.ok, false);
+});
