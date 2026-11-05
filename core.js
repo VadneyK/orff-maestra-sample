@@ -20,6 +20,33 @@ export const SUGGESTED_SOURCES = [
   STANDARDIZED,
 ];
 
+// One line per rule, in plain words. The page shows it when a rule chip is hovered or focused,
+// and test/trace.test.mjs checks that every id here is a row in REQUIREMENTS.md.
+export const RULES = {
+  T1: "Each row names one data source.",
+  T2: "Multiple standardized tests count as one source.",
+  T3: "Each finding is brief enough to read at a glance.",
+  T4: "Disorder? is Yes, No, or Inconclusive, decided per source.",
+  T5: "An inconclusive source needs a one-line reason and is left out of the count.",
+  T6: "Convergence counts only interpretable sources (Yes or No).",
+  T7: "A cited test score stands next to at least one other named source.",
+  T8: "Gather naturalistic data first; standardized testing last, closed with a testing-the-limits probe.",
+  T9: "A difference finding answers only the educational question; general-education supports stay open.",
+};
+
+// The questions only the spec author can answer. Each one blocks a named piece of the build.
+export const OPEN_QUESTIONS = [
+  { id: "Q1", text: "What fixed rule turns the per-source codes into the team's convergence statement?", blocks: "combineRule in core.js" },
+  { id: "Q2", text: "When Yes and No are equal, what does the convergence line say?", blocks: "the tie wording in convergenceLine" },
+  { id: "Q3", text: "Is every No a source that supports difference, or can a No be neutral?", blocks: "the word \"difference\" in the line" },
+  { id: "Q4", text: "Do two observations in different settings count as one source or two?", blocks: "sourceKey (T2 covers only standardized tests)" },
+  { id: "Q5", text: "May the funded prototype implement the matrix and reasoning map (CC BY-ND)?", blocks: "coverage planning in step 1" },
+  { id: "Q6", text: "Should each row record the setting the source captures?", blocks: "a setting field on each row" },
+];
+
+// T8: the naturalistic sources the table names to gather before standardized testing.
+export const NATURALISTIC = ["Classroom observation", "Teacher interview", "Language sample"];
+
 export function emptyRow(source = "") {
   return { source, finding: "", answer: "", reason: "" };
 }
@@ -87,6 +114,28 @@ export function convergenceLine(c) {
   const skipped = `${c.inconclusive} source${c.inconclusive === 1 ? "" : "s"} inconclusive and not counted.`;
   if (!side) return `${c.disorder} of ${c.interpretable} interpretable sources support disorder and ${c.difference} support difference (split); ${skipped}`;
   return `${n} of ${c.interpretable} interpretable sources support ${side}; ${skipped}`;
+}
+
+// T8: advice on the order of gathering, from the table's first how-to line. Advisory only:
+// it never changes the count, because the table does not make order a condition of counting.
+export function gatherNotes(rows) {
+  const notes = [];
+  const named = rows.filter((r) => r.source.trim());
+  const keys = new Set(named.map((r) => sourceKey(r.source)));
+  const std = named.filter((r) => sourceKey(r.source) === STANDARDIZED.toLowerCase());
+  if (std.length === 0) return notes;
+  const missing = NATURALISTIC.filter((n) => !keys.has(n.toLowerCase()));
+  if (missing.length)
+    notes.push({ rule: "T8", text: `Naturalistic data comes first. Not in the table yet: ${missing.join(", ").toLowerCase()}.` });
+  if (!std.some((r) => /limits|probe/i.test(r.finding)))
+    notes.push({ rule: "T8", text: "Close standardized testing with a brief testing-the-limits probe, and say what it showed in the finding." });
+  return notes;
+}
+
+// T9: from the table's note on the third column. Shown only when the count leans to difference.
+export function contextNote(c) {
+  if (c.interpretable === 0 || c.difference <= c.disorder) return null;
+  return "A difference finding answers only the educational question. It does not rule out general-education supports, such as MTSS or dialect-informed instruction.";
 }
 
 // PLACEHOLDER for the TTL-MSM combining rule. The public table does not publish one, so this

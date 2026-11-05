@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  emptyRow, rowIssues, duplicateSources, convergence, convergenceLine, combineRule, noteChecks,
+  emptyRow, rowIssues, duplicateSources, convergence, convergenceLine, combineRule, noteChecks, gatherNotes, contextNote,
 } from "../core.js";
 
 const row = (source, answer, reason = "", finding = "Brief finding.") => ({ source, finding, answer, reason });
@@ -83,4 +83,34 @@ test("T7: two standardized tests named in the note still count as one source", (
   const rows = [row("Standardized assessment", "Yes"), row("Standardized test: vocabulary", "Yes"), row("Teacher interview", "No")];
   const k = noteChecks(rows, "Standard score of 78 on the standardized assessment and the standardized test: vocabulary.").find((x) => x.rule === "T7");
   assert.equal(k.ok, false);
+});
+
+test("T8: with a standardized row, missing naturalistic sources and a missing probe are noted", () => {
+  const rows = [row("Teacher interview", "No"), row("Standardized assessment", "Yes", "", "Scores below the norm.")];
+  const notes = gatherNotes(rows);
+  assert.equal(notes.length, 2);
+  assert.match(notes[0].text, /classroom observation, language sample/);
+  assert.match(notes[1].text, /testing-the-limits/);
+});
+
+test("T8: no notes before any standardized test, and none once the order and probe are in place", () => {
+  assert.deepEqual(gatherNotes([row("Teacher interview", "No")]), []);
+  const rows = [
+    row("Classroom observation", "No"), row("Teacher interview", "No"), row("Language sample", "No"),
+    row("Standardized assessment", "Inconclusive", "Norms do not fit.", "Below the norm; a testing-the-limits probe raised accuracy."),
+  ];
+  assert.deepEqual(gatherNotes(rows), []);
+});
+
+test("T8 is advice only: it never changes the count", () => {
+  const rows = [row("Standardized assessment", "Yes", "", "Below the norm.")];
+  assert.ok(gatherNotes(rows).length > 0);
+  assert.equal(convergence(rows).interpretable, 1);
+});
+
+test("T9: the general-education note shows only when the count leans to difference", () => {
+  assert.ok(contextNote(convergence([row("A", "No"), row("B", "No"), row("C", "Yes")])));
+  assert.equal(contextNote(convergence([row("A", "Yes"), row("B", "No")])), null);
+  assert.equal(contextNote(convergence([row("A", "Yes")])), null);
+  assert.equal(contextNote(convergence([])), null);
 });

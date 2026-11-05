@@ -15,10 +15,16 @@ Source: Multisource Assessment Summary Table, Callwood 2026, callwoodslp.com/tab
 | T5 | An inconclusive row needs a one-line reason and is left out of the count. Its status reads "Listed, not counted". | "Give each inconclusive source a one-line reason and leave it out of the count." | `T5`, `T6` |
 | T6 | Convergence counts only Yes and No rows and fills the line "___ of ___ interpretable sources support ___; ___ inconclusive and not counted." | The convergence line and "Count only interpretable sources (Yes or No)". | `T6`, `a tie leaves the blank open` |
 | T7 | If the note cites a test score, it also names at least one other source. Two standardized tests named together still count as one source here (T2). | Paraphrased from the companion Reasoning Map: one source should not become the conclusion because it produced a number. | `T7: a cited score with no other named source is flagged`, `T7: two standardized tests named in the note still count as one source` |
+| T8 | Advice, not a count rule: once a standardized test is in the table, the page notes any of classroom observation, teacher interview and language sample still missing, and asks for a testing-the-limits probe in the finding. | "Gather naturalistic data first: classroom observation, teacher interview, and language sample. Give standardized testing last, and close it with a brief testing-the-limits probe." | `T8: with a standardized row ...`, `T8: no notes before ...`, `T8 is advice only` |
+| T9 | When the count leans to difference, the page notes that a difference finding answers only the educational question and leaves general-education supports open. | The table's note on the third column: a difference finding "does not rule out general-education supports, such as MTSS". | `T9: the general-education note ...` |
 
 ## Page checks
 
 Checked on 2026-11-05 at 375 px and 1280 px, light and dark, with axe-core: 0 violations on step 1, step 2 with the sample case, step 2 with a T2 merge flag showing, and step 3. Under 720 px each row becomes a card, so Disorder? is in view without sideways scrolling.
+
+## Kept in step by tests
+
+`test/trace.test.mjs` fails if this file and the code drift: every rule id in `core.js` must be a row above (and the reverse), every rule the code can raise must be defined, the six open questions must match, and each constructed case in `cases.js` must be complete and give the line it promises (A difference, B disorder, C split).
 
 ## Not built, on purpose
 
