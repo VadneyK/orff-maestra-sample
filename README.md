@@ -41,6 +41,7 @@ npm test
 - `index.html`: layout and styles.
 - `test/core.test.mjs`: one test per rule.
 - `REQUIREMENTS.md`: each rule, the line of the table it comes from, and its test. Plus the open questions for the spec author.
+- `DEMO.md`: a two-minute click path through the page.
 
 ## What was decided, and why
 
