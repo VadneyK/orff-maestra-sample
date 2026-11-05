@@ -132,13 +132,17 @@ export function gatherNotes(rows) {
   return notes;
 }
 
-// A finding says a testing-the-limits probe was given. "No probe was possible" or "probe not given"
-// does not count: a negation before or right after the word in the same clause means it was not done.
+// A finding says a testing-the-limits probe was given. A negation counts only when it sits within
+// three words of the probe: "no testing-the-limits probe was possible" and "probe not given" are not
+// probes, but "scores did not change after a testing-the-limits probe" is.
+const PROBE = String.raw`(probes?|probed|limits)`;
+const NEG = String.raw`(no|not|without|never|unable|cannot|could\s?n[o']t)`;
+const NEG_BEFORE = new RegExp(String.raw`\b${NEG}\b(?:[\s-]+[\w']+){0,3}?[\s-]+${PROBE}\b`);
+const NEG_AFTER = new RegExp(String.raw`\b${PROBE}\b\s+(?:(?:was|were|could|is)\s+)?${NEG}\b`);
 export function probeDone(finding) {
-  for (const clause of finding.toLowerCase().split(/[.;]/)) {
-    if (!/\b(probe|limits)\b/.test(clause)) continue;
-    if (/\b(no|not|without|never|unable|could ?n[o']t)\b[^.;]*\b(probe|limits)\b/.test(clause)) continue;
-    if (/\b(probe|limits)\b\s+(was|were)?\s*(not|never)\b/.test(clause)) continue;
+  for (const clause of finding.toLowerCase().split(/[.;,]/)) {
+    if (!new RegExp(String.raw`\b${PROBE}\b`).test(clause)) continue;
+    if (NEG_BEFORE.test(clause) || NEG_AFTER.test(clause)) continue;
     return true;
   }
   return false;

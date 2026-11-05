@@ -122,4 +122,12 @@ test("T8: a negated probe does not count as a probe", () => {
   assert.equal(probeDone("Below the norm; a testing-the-limits probe raised accuracy."), true);
   assert.equal(probeDone("Errors persisted in a testing-the-limits probe."), true);
   assert.equal(probeDone("Below the norm."), false);
+  assert.equal(probeDone("Probe could not be given."), false);
+});
+
+test("T8: a negation about something else does not cancel a probe", () => {
+  assert.equal(probeDone("Scores did not change after a testing-the-limits probe."), true);
+  assert.equal(probeDone("Errors were not dialect features, confirmed by a testing-the-limits probe."), true);
+  assert.equal(probeDone("Probes with extra examples raised accuracy."), true);
+  assert.equal(probeDone("Probed with extra examples; accuracy rose."), true);
 });

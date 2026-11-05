@@ -147,6 +147,7 @@ $("#cases").addEventListener("click", (e) => {
   setStep(2, true);
 });
 
+$("#rule-key").innerHTML = Object.entries(RULES).map(([id, text]) => `<dt>${id}</dt><dd>${esc(text)}</dd>`).join("");
 $("#questions").innerHTML = OPEN_QUESTIONS.map((q) => `<li><b>${q.id}.</b> ${esc(q.text)} <span class="blocks">Blocks: ${esc(q.blocks)}.</span></li>`).join("");
 $("#clear").addEventListener("click", () => { state.rows = []; state.note = ""; $("#case-name").textContent = ""; renderAll(); setStep(1); });
 $("#print").addEventListener("click", () => window.print());

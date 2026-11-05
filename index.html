@@ -68,7 +68,6 @@
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .cases-label { margin: 16px 0 0; color: var(--muted); }
   .case-name { color: var(--muted); font-size: 14px; }
-  h2[tabindex="-1"]:focus { outline: none; }
   .case-name:empty { display: none; }
   .advice { list-style: none; padding: 10px 12px; margin: 12px 0 0; color: var(--warn); background: var(--warn-bg); border-radius: 8px; font-size: 14px; }
   .advice li + li { margin-top: 4px; }
@@ -77,6 +76,11 @@
   .questions li { padding: 8px 0; border-bottom: 1px solid var(--line); }
   .questions li:last-child { border-bottom: 0; }
   .blocks { display: block; color: var(--muted); font-size: 13px; }
+  .key { margin-top: 12px; font-size: 14px; }
+  .key summary { cursor: pointer; color: var(--accent); }
+  .key dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; margin: 8px 0 0; }
+  .key dt { font-weight: 600; }
+  .key dd { margin: 0; }
   @media (max-width: 720px) {
     table { min-width: 0; }
     thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -127,6 +131,10 @@
     </div>
     <div class="bar"><button type="button" id="add">Add a row</button></div>
     <ul class="advice" id="gather" aria-label="Gathering order" hidden></ul>
+    <details class="key">
+      <summary>What the rule ids mean</summary>
+      <dl id="rule-key"></dl>
+    </details>
   </section>
 
   <section class="panel" data-step="2">
