@@ -12,7 +12,7 @@ Short version: I built the step whose rules are public and adaptable, made every
 2. **Code each source.** For each row: the source, a brief finding, and Disorder? as Yes, No, or Inconclusive. The page checks each row against the table's rules as you type (one-line reason for inconclusive, brief findings, standardized tests count as one source) and fills in the convergence line: "4 of 4 interpretable sources support difference; 1 source inconclusive and not counted."
 3. **Check the note.** Write the team's brief note and see plain checks against the table: is the count stated, is each inconclusive source accounted for, does a cited score stand next to other named sources.
 
-"Load a constructed sample case" fills in a fictional case so the whole flow can be seen in a minute.
+Three constructed cases (A leans to difference, B to disorder, C is a split that shows open question Q2) fill in a fictional case so the whole flow can be seen in a minute. The six open questions for the spec author are listed at the bottom of the page.
 
 Everything runs in the page. Nothing is stored, sent, or logged. There are no student records and no accounts.
 
@@ -39,15 +39,18 @@ npm test
 - `core.js`: all of the rules, as pure functions with no DOM. This is the part a developer would keep.
 - `app.js`: the page wiring.
 - `index.html`: layout and styles.
-- `test/core.test.mjs`: one test per rule.
+- `test/core.test.mjs`: one or more tests per rule.
+- `cases.js`: the three constructed cases, fictional.
+- `test/trace.test.mjs`: fails if the code, the cases and `REQUIREMENTS.md` drift apart.
 - `REQUIREMENTS.md`: each rule, the line of the table it comes from, and its test. Plus the open questions for the spec author.
 - `DEMO.md`: a two-minute click path through the page.
+- `USABILITY.md`: the plan for the first pilot sessions with school SLPs on constructed cases.
 
 ## What was decided, and why
 
 - **Step 2 first.** It is the core of the method, its rules are fully public, and the table is CC BY 4.0, so it can be adapted with credit. The matrix and the reasoning map are CC BY-ND, so I linked to them rather than rebuilding them.
 - **No determination.** The table says it informs the team's decision and does not make it. The prototype stops at counts. The combining rule has one marked place in `core.js` and a test waiting for it.
-- **Rules are plain code with ids.** T1 to T7 match `REQUIREMENTS.md`. A clinician can read the table of rules without reading code, and a developer can find the code for any rule by its id.
+- **Rules are plain code with ids.** T1 to T9 match `REQUIREMENTS.md`, and a test keeps them matched. A clinician can read the table of rules without reading code, and a developer can find the code for any rule by its id.
 - **No model call.** Step 3 checks are deterministic. They are cheap, testable, and keep every word on the clinician's device. Whether a model should give feedback on the full written determination is a decision for the pilot, made with the clinicians.
 - **Vanilla JavaScript, one page.** For a nine-month build with a lean budget, a static page the pilot SLPs can open from a link is the cheapest thing to change every week. A framework can come when the screens settle.
 
