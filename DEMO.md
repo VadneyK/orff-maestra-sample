@@ -2,12 +2,12 @@
 
 A click path for showing the prototype on a call. Share a browser window at desktop width (1280 px or wider) on https://vadneyk.github.io/orff-maestra-sample/. Times are a guide; the whole path takes about two minutes. Everything runs in the page, so a reload resets it.
 
-Have `REQUIREMENTS.md` open in a second tab on GitHub for the last step.
+The six open questions are on the page itself, at the bottom, so no second tab is needed.
 
 ## 0:00 Enter rows
 
 1. On **1. Choose sources**, tick **Classroom observation** and **Teacher interview**. Say: each source becomes its own row; coverage planning stays on the author's official matrix, linked here, because it is CC BY-ND.
-2. Click **Load a constructed sample case**. The page jumps to step 2 with five rows from a fictional student whose dialect and language history do not match the test norms.
+2. Click **Case A: difference**. The page jumps to step 2 with five rows from a fictional student whose dialect and language history do not match the test norms.
 3. Point at the Status column: four rows read **Counted**, the standardized assessment reads **Listed, not counted**.
 
 ## 0:25 The T2 merge flag
@@ -28,12 +28,13 @@ Have `REQUIREMENTS.md` open in a second tab on GitHub for the last step.
 
 1. Read the line aloud: "4 of 4 interpretable sources support difference; 1 source inconclusive and not counted."
 2. On **Classroom observation**, click **Yes**. The line changes to "3 of 4 interpretable sources support difference". Click **No** to put it back.
-3. Point at the yellow note: the combining rule is not wired in, so the page reports counts and makes no determination. Say: the table informs the team's decision and does not make it; the rule has one marked place in `core.js` and a test waiting for it.
-4. Optional, if there is time: click **Next: check the note**. Both checks on the sample note pass (count stated, inconclusive source named). No model call; the checks are plain rules.
+3. Point at the T9 note under the reasons: if the team finds difference, that answers only the educational question and leaves general-education supports such as MTSS open. It comes from the table's note on the third column.
+4. Point at the yellow note: the combining rule is not wired in, so the page reports counts and makes no determination. Say: the table informs the team's decision and does not make it; the rule has one marked place in `core.js` and a test waiting for it.
+5. Optional, if there is time: click **Next: check the note**. Both checks on the sample note pass (count stated, inconclusive source named). No model call; the checks are plain rules.
 
 ## 1:40 The six open questions
 
-Switch to `REQUIREMENTS.md`, scroll to **Open questions for the spec author**, and walk the six:
+Scroll to **Open questions for the spec author** at the bottom of the page and walk the six. Each one names the piece of the build it blocks:
 
 1. **Q1** The combining rule.
 2. **Q2** How a tie is written.
@@ -42,10 +43,12 @@ Switch to `REQUIREMENTS.md`, scroll to **Open questions for the spec author**, a
 5. **Q5** Licence for the matrix and reasoning map (CC BY-ND).
 6. **Q6** Asking for the setting on each row.
 
-Say: each one blocks a specific line of code, and I would rather ask than guess.
+Say: each one blocks a specific line of code, and I would rather ask than guess. If asked how the list stays honest: `test/trace.test.mjs` fails when the code and REQUIREMENTS.md disagree.
+
+If there is time: go back to step 1 and click **Case B: disorder** (5 of 5 support disorder) and **Case C: split (Q2)** (2 and 2, the tie the table leaves open; its T8 note asks for the testing-the-limits probe that could not be given). It shows the page does not lean one way.
 
 ## If something goes wrong
 
 - The page looks stale after a change: hard reload (Cmd+Shift+R).
-- Rows got messy: click **Clear**, then **Load a constructed sample case** again.
+- Rows got messy: click **Clear**, then **Case A: difference** again.
 - No network: run it locally with `python3 -m http.server 8765` in the repo and open http://127.0.0.1:8765.
