@@ -1,22 +1,11 @@
 import {
-  ANSWERS, SUGGESTED_SOURCES, emptyRow, rowIssues, duplicateSources, sourceKey,
-  convergence, convergenceLine, combineRule, noteChecks,
+  ANSWERS, SUGGESTED_SOURCES, RULES, OPEN_QUESTIONS, emptyRow, rowIssues, duplicateSources, sourceKey,
+  convergence, convergenceLine, combineRule, noteChecks, gatherNotes, contextNote,
 } from "./core.js";
+import { CASES } from "./cases.js";
 
 // State lives in memory only. Nothing is stored or sent anywhere.
 const state = { rows: [], note: "", step: 1 };
-
-// A constructed case for the demo. Fictional, written to exercise every rule; not clinical guidance.
-const SAMPLE = {
-  rows: [
-    { source: "Classroom observation", finding: "Follows multi-step directions and takes turns in group work; asks peers to repeat new vocabulary.", answer: "No", reason: "" },
-    { source: "Teacher interview", finding: "Participates in class discussion; teacher notes growth since fall in academic vocabulary.", answer: "No", reason: "" },
-    { source: "Language sample", finding: "Narrative is organized with clear sequence; dialect features are consistent with the home community.", answer: "No", reason: "" },
-    { source: "Parent interview", finding: "Communicates well at home and with cousins in both languages; no concerns at home.", answer: "No", reason: "" },
-    { source: "Standardized assessment", finding: "Receptive and expressive scores below the norm; the normative sample does not match the student's language history.", answer: "Inconclusive", reason: "Norms do not fit this student's language background." },
-  ],
-  note: "4 of 4 interpretable sources support difference; the standardized assessment is inconclusive and not counted because its norms do not fit this student's language background.",
-};
 
 const $ = (sel) => document.querySelector(sel);
 const esc = (s) => s.replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
@@ -28,12 +17,15 @@ function renderSources() {
   ).join("");
 }
 
+// A rule chip: its id, with the rule in plain words on hover and for screen readers.
+const chip = (id) => `<span class="rule" title="${esc(`${id}: ${RULES[id]}`)}"><span aria-hidden="true">${id}</span><span class="sr">Rule ${id}, ${esc(RULES[id])}</span></span>`;
+
 // The status cell: the row's open issues (T1 to T5), the T2 merge flag, or "Counted".
 function statusHtml(r, dups) {
   const issues = rowIssues(r);
   const dup = r.source.trim() !== "" && dups.includes(sourceKey(r.source));
   return (issues.length || dup
-    ? `<ul>${issues.map((x) => `<li><span class="rule">${x.rule}</span> ${esc(x.text)}</li>`).join("")}${dup ? `<li><span class="rule">T2</span> Counts as one source with another row. Merge them.</li>` : ""}</ul>`
+    ? `<ul>${issues.map((x) => `<li>${chip(x.rule)} ${esc(x.text)}</li>`).join("")}${dup ? `<li>${chip("T2")} Counts as one source with another row. Merge them.</li>` : ""}</ul>`
     : r.answer === "Inconclusive"
       ? `<span class="ok">Listed, not counted</span>`
       : `<span class="ok">Counted</span>`) + `<button type="button" class="del" aria-label="Remove row">Remove</button>`;
@@ -66,6 +58,12 @@ function renderSummary() {
     <div><b>${c.inconclusive}</b><span>Inconclusive, not counted</span></div>
     <div><b>${c.incomplete}</b><span>Rows not finished</span></div>`;
   $("#reasons").innerHTML = c.inconclusiveReasons.map((r) => `<li><b>${esc(r.source)}:</b> ${esc(r.reason)}</li>`).join("");
+  const gather = gatherNotes(state.rows);
+  $("#gather").innerHTML = gather.map((x) => `<li>${chip(x.rule)} ${esc(x.text)}</li>`).join("");
+  $("#gather").hidden = gather.length === 0;
+  const ctx = contextNote(c);
+  $("#context").innerHTML = ctx ? `${chip("T9")} ${esc(ctx)}` : "";
+  $("#context").hidden = !ctx;
   const rule = combineRule(c);
   $("#rule").textContent = rule === null
     ? "Combining rule not wired in yet. The public table does not publish one, so the prototype reports counts and makes no determination (open question Q1)."
@@ -76,7 +74,7 @@ function renderSummary() {
 function renderChecks() {
   const checks = noteChecks(state.rows, state.note);
   $("#checks").innerHTML = state.note.trim()
-    ? checks.map((k) => `<li class="${k.ok ? "pass" : "miss"}"><span class="rule">${k.rule}</span> ${k.ok ? "Yes" : "Not yet"}: ${esc(k.text)}</li>`).join("")
+    ? checks.map((k) => `<li class="${k.ok ? "pass" : "miss"}">${chip(k.rule)} ${k.ok ? "Yes" : "Not yet"}: ${esc(k.text)}</li>`).join("")
     : "<li>Write the brief note to see the checks.</li>";
 }
 
@@ -131,13 +129,19 @@ $("#note").addEventListener("input", (e) => { state.note = e.target.value; rende
 
 document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", () => setStep(+t.dataset.go)));
 document.querySelectorAll("[data-next]").forEach((b) => b.addEventListener("click", () => setStep(+b.dataset.next)));
-$("#sample").addEventListener("click", () => {
-  state.rows = SAMPLE.rows.map((r) => ({ ...r }));
-  state.note = SAMPLE.note;
+// Constructed cases: one button each, so the page can be shown leaning either way or split.
+$("#cases").innerHTML = CASES.map((c) => `<button type="button" data-case="${c.id}" title="${esc(c.summary)}">${esc(c.label)}</button>`).join("");
+$("#cases").addEventListener("click", (e) => {
+  const c = CASES.find((x) => x.id === e.target.dataset.case); if (!c) return;
+  state.rows = c.rows.map((r) => ({ ...r }));
+  state.note = c.note;
+  $("#case-name").textContent = `${c.label}. ${c.summary} Fictional, for demonstration.`;
   renderAll();
   setStep(2);
 });
-$("#clear").addEventListener("click", () => { state.rows = []; state.note = ""; renderAll(); setStep(1); });
+
+$("#questions").innerHTML = OPEN_QUESTIONS.map((q) => `<li><b>${q.id}.</b> ${esc(q.text)} <span class="blocks">Blocks: ${esc(q.blocks)}.</span></li>`).join("");
+$("#clear").addEventListener("click", () => { state.rows = []; state.note = ""; $("#case-name").textContent = ""; renderAll(); setStep(1); });
 $("#print").addEventListener("click", () => window.print());
 
 renderAll();

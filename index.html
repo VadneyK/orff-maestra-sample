@@ -36,6 +36,7 @@
   .bar { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
   .picks { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 6px 16px; margin: 12px 0; }
   .pick { display: flex; gap: 8px; align-items: center; }
+  .pick input { width: auto; margin: 0; flex: none; }
   .scroll { overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; min-width: 760px; table-layout: fixed; }
   th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); border-bottom: 1px solid var(--line); padding: 6px; }
@@ -64,6 +65,17 @@
   footer { color: var(--muted); font-size: 13px; }
   a { color: var(--accent); }
   /* Narrow screens: each row becomes a card so Disorder? stays in view without sideways scrolling. */
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .cases-label { margin: 16px 0 0; color: var(--muted); }
+  .case-name { color: var(--muted); font-size: 14px; }
+  .case-name:empty { display: none; }
+  .advice { list-style: none; padding: 10px 12px; margin: 12px 0 0; color: var(--warn); background: var(--warn-bg); border-radius: 8px; font-size: 14px; }
+  .advice li + li { margin-top: 4px; }
+  .context { border-left: 3px solid var(--accent); padding: 4px 0 4px 10px; font-size: 14px; }
+  .questions { padding-left: 0; list-style: none; margin: 0; }
+  .questions li { padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .questions li:last-child { border-bottom: 0; }
+  .blocks { display: block; color: var(--muted); font-size: 13px; }
   @media (max-width: 720px) {
     table { min-width: 0; }
     thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -82,7 +94,7 @@
 <body>
 <main>
   <h1>Summary Table Prototype</h1>
-  <p class="sub">A working sketch of the three-step SLP workflow, built in about three hours as a job-application work sample. Step 2 is the part that is built. Everything runs in this page: nothing is stored or sent.</p>
+  <p class="sub">A working sketch of the three-step SLP workflow, built as a job-application work sample. Step 2 is the part that is built. Everything runs in this page: nothing is stored or sent.</p>
 
   <nav class="tabs" role="tablist" aria-label="Steps">
     <button class="tab" role="tab" data-go="1">1. Choose sources</button>
@@ -93,16 +105,19 @@
   <section class="panel" data-step="1">
     <h2>1. Choose the sources you plan to gather</h2>
     <p>Each source you pick becomes a row in step 2. To see what a set of sources covers, use the official <a href="https://callwoodslp.com/matrix" target="_blank" rel="noopener">Source Complementarity Matrix</a>. It is shared under a no-derivatives licence, so this prototype links to it rather than rebuilding it (open question Q5).</p>
+    <p>The table gathers naturalistic data first (classroom observation, teacher interview, language sample) and gives standardized testing last, closed with a brief testing-the-limits probe. The list is in that order.</p>
     <div class="picks" id="source-picks"></div>
     <div class="bar">
       <button type="button" class="primary" data-next="2">Next: code each source</button>
-      <button type="button" id="sample">Load a constructed sample case</button>
     </div>
+    <p class="cases-label" id="cases-label">Or load a constructed case (fictional, written to exercise every rule):</p>
+    <div class="bar" id="cases" role="group" aria-labelledby="cases-label"></div>
   </section>
 
   <section class="panel" data-step="2">
     <h2>2. Code each source on its own</h2>
-    <p>Reduce each source to what it showed, then answer Disorder? for that source alone. Only Yes and No count toward convergence. An inconclusive source needs a one-line reason and is left out of the count.</p>
+    <p class="case-name" id="case-name" aria-live="polite"></p>
+    <p>Reduce each source to what it showed, then answer Disorder? for that source alone. Yes means the source shows a disorder affecting the student's communication; No means it does not, including when a condition is not limiting communication in the setting that source captures. Only Yes and No count toward convergence. An inconclusive source needs a one-line reason and is left out of the count.</p>
     <div class="scroll">
       <table>
         <thead><tr><th style="width:20%">Data source</th><th style="width:33%">Finding</th><th style="width:25%">Disorder?</th><th style="width:22%">Status</th></tr></thead>
@@ -110,6 +125,7 @@
       </table>
     </div>
     <div class="bar"><button type="button" id="add">Add a row</button></div>
+    <ul class="advice" id="gather" aria-label="Gathering order" hidden></ul>
   </section>
 
   <section class="panel" data-step="2">
@@ -117,6 +133,7 @@
     <p class="line" id="line"></p>
     <div class="counts" id="counts"></div>
     <ul id="reasons"></ul>
+    <p class="context" id="context" hidden></p>
     <p class="note" id="rule"></p>
     <div class="bar">
       <button type="button" class="primary" data-next="3">Next: check the note</button>
@@ -130,6 +147,12 @@
     <p>Write the team's brief note. The checks below are plain rules taken from the table, run as you type. Feedback on the full written determination is the later phase (see the README).</p>
     <textarea id="note" rows="4" aria-label="Brief note" placeholder="For example: 3 of 4 interpretable sources support difference; ..."></textarea>
     <ul id="checks"></ul>
+  </section>
+
+  <section class="panel" aria-labelledby="q-head">
+    <h2 id="q-head">Open questions for the spec author</h2>
+    <p>Places where the prototype asks instead of guessing. Each one blocks a named piece of the build. Rule ids (T1 to T9) and these questions are traced line by line in <a href="https://github.com/VadneyK/orff-maestra-sample/blob/main/REQUIREMENTS.md">REQUIREMENTS.md</a>.</p>
+    <ol class="questions" id="questions"></ol>
   </section>
 
   <footer>
